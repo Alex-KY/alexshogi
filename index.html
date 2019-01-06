@@ -140,14 +140,14 @@
                                                         <label>Знание</label><input type="text" v-model="curCompetence.knowledge">
                                                     </main>
                                                     <footer>
-                                                        <span class="button" @click="competenceSave()">Сохранить</span>
+                                                        <span class="button" @click="competenceSave(close)">Сохранить</span>
                                                         <span class="button" @click="competenceRemove()">Удалить профессиональную компетенцию</span>
                                                     </footer>
                                                 </section>
                                             </main>
                                             <footer>
-                                                <span class="button" :class="{ 'button-disabled': competenceAddVisible }" @click="activitySave()">Сохранить</span>
-                                                <span class="button" :class="{ 'button-disabled': competenceAddVisible }" @click="competenceAdd(curActivity.id)">Добавить профессиональную компетенцию</span>
+                                                <span class="button" :class="{ 'button-disabled': competenceAddVisible }" @click="activitySave(close)">Сохранить</span>
+                                                <span class="button" :class="{ 'button-disabled': competenceAddVisible }" @click="competenceAdd(curActivity.id); activitySave()">Добавить профессиональную компетенцию</span>
                                                 <span class="button" :class="{ 'button-disabled': competenceAddVisible }" @click="activityRemove()">Удалить вид деятельности</span>
                                             </footer>
                                         </section>
@@ -177,7 +177,7 @@
                                         <br>
                                         <div class="row">
                                             <div class="col">
-                                                <label>Теоритическая часть</label><input type="number" v-model="curTheme.theory">
+                                                <label>Теоретическая часть</label><input type="number" v-model="curTheme.theory">
                                             </div>
                                             <div class="gap"></div>
                                             <div class="col">
@@ -190,16 +190,16 @@
                                         <textarea id="content" rows="5" v-model="curTheme.contents"></textarea>
                                     </main>
                                     <footer>
-                                        <span class="button" :class="{ 'button-disabled': activityAddVisible }" @click="themeSave()">Сохранить</span>
-                                        <span class="button" :class="{ 'button-disabled': activityAddVisible }" @click="activityAdd(curTheme.id)">Добавить вид деятельности</span>
+                                        <span class="button" :class="{ 'button-disabled': activityAddVisible }" @click="themeSave(close)">Сохранить</span>
+                                        <span class="button" :class="{ 'button-disabled': activityAddVisible }" @click="activityAdd(curTheme.id); themeSave()">Добавить вид деятельности</span>
                                         <span class="button" :class="{ 'button-disabled': activityAddVisible }" @click="themeRemove()">Удалить тему</span>
                                     </footer>
                                 </section>
                             </form>
                         </main>
                         <footer>
-                            <span class="button" :class="{ 'button-disabled': themeAddVisible }" @click="moduleSave()">Сохранить</span>
-                            <span class="button" :class="{ 'button-disabled': themeAddVisible }" @click="themeAdd(curModule.id)">Добавить тему</span>
+                            <span class="button" :class="{ 'button-disabled': themeAddVisible }" @click="moduleSave(close)">Сохранить</span>
+                            <span class="button" :class="{ 'button-disabled': themeAddVisible }" @click="themeAdd(curModule.id); moduleSave()">Добавить тему</span>
                             <span class="button" :class="{ 'button-disabled': themeAddVisible }" @click="moduleRemove()">Удалить модуль</span>
                         </footer>
                     </section>
@@ -375,8 +375,9 @@
                         this.curModule.id = Date.now();
                         this.moduleAddVisible = true;
                     },
-                    moduleSave() {
+                    moduleSave(close) {
                         if (!this.curModule.title) {
+                            close = false;
                             alert('Необходимо указать название модуля');
                             return;
                         }
@@ -390,6 +391,7 @@
                         } else {
                             this.moduleUpdate();
                         }
+                        if (close) this.moduleClose();
                     },
                     moduleOpen(module) {
                         this.curModule = {...module};
@@ -420,8 +422,15 @@
                             }
                         }
                     },
+                    moduleClose() {
+                        this.moduleAddVisible = false;
+                        this.themeAddVisible = false;
+                        this.activityAddVisible = false;
+                        this.competenceAddVisible = false;
+                    },
                     // ******* Themes *******
                     themeAdd(moduleId) {
+                        if (!this.curModule.title) return;
                         this.curTheme.title = '';
                         this.curTheme.labor = 0;
                         this.curTheme.labor_pps = 0;
@@ -435,8 +444,9 @@
                         this.curTheme.parent_id = moduleId;
                         this.themeAddVisible = true;
                     },
-                    themeSave() {
+                    themeSave(close) {
                         if (!this.curTheme.title) {
+                            close = false;
                             alert('Необходимо указать название темы');
                             return;
                         }
@@ -450,6 +460,7 @@
                         } else {
                             this.themeUpdate();
                         }
+                        if (close) this.moduleClose();
                     },
                     themeOpen(theme) {
                         this.curTheme = {...theme};
@@ -481,13 +492,15 @@
                     },
                     // ******* Activities *******
                     activityAdd(themeId) {
+                        if (!this.curTheme.title) return;
                         this.curActivity.title = '';
                         this.curActivity.id = Date.now();
                         this.curActivity.parent_id = themeId;
                         this.activityAddVisible = true;
                     },
-                    activitySave() {
+                    activitySave(close) {
                         if (!this.curActivity.title) {
+                            close = false;
                             alert('Необходимо указать название вида деятельности');
                             return;
                         }
@@ -501,6 +514,7 @@
                         } else {
                             this.activityUpdate();
                         }
+                        if (close) this.moduleClose();
                     },
                     activityOpen(activity) {
                         this.curActivity = {...activity};
@@ -532,6 +546,7 @@
                     },
                     // ******* Competencies *******
                     competenceAdd(activityId) {
+                        if (!this.curActivity.title) return;
                         this.curCompetence.title = '';
                         this.curCompetence.experience = '';
                         this.curCompetence.skill = '';
@@ -540,9 +555,10 @@
                         this.curCompetence.parent_id = activityId;
                         this.competenceAddVisible = true;
                     },
-                    competenceSave() {
+                    competenceSave(close) {
                         if (!this.curCompetence.title) {
-                            alert('Необходимо указать название модуля');
+                            close = false;
+                            alert('Необходимо указать название профессиональной компетенции');
                             return;
                         }
                         let found = this.items.some(i => {
@@ -555,6 +571,7 @@
                         } else {
                             this.moduleUpdate();
                         }
+                        if (close) this.moduleClose();
                     },
                     competenceOpen(competence) {
                         this.curCompetence = {...competence};
