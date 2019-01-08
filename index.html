@@ -211,6 +211,41 @@
             </div>
             <div class="creator-tab tab-result" :class="{ 'tab-hidden': currentTab === 'construct' }">
                 <section class="result">
+                    <div id="page0" class="font12pt">
+                        <p class="center" style="margin-bottom:24pt;"><b>МИНИСТЕРСТВО ОБРАЗОВАНИЯ МОСКОВСКОЙ ОБЛАСТИ</b></p>
+                        <p class="center"><b>Государственное бюджетное  образовательное учреждение</b></p>
+                        <p class="center"><b>высшего образования Московской области</b></p>
+                        <p class="center"><b>«Академия социального управления»</b></p>
+                        <p class="center" style="margin-top:36pt;"><b>Кафедра информационно-коммуникационных технологий</b></p>
+                        <div class="center" style="margin-top:12pt;">
+                        <table class="left" style="margin-top:12pt;">
+                            <thead><th style="padding-right:36pt;">«СОГЛАСОВАНО»</th><th>«УТВЕРЖДАЮ»</th></thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding-right:36pt;">на заседании Учёного совета<br>от «_____»___________ 20__г.<br>Протокол № _______</td>
+                                    <td>Ректор  ____________А.И. Салов<br><br>«____»_______________20__г.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                        <p class="center" style="margin-top:96pt; font-size:14pt;"><b>Дополнительная профессиональная программа</b></p>
+                        <p class="center" style="margin-top:12pt; font-size:14pt;"><b>(повышение квалификации)</b></p>
+                        <p class="center" style="margin-top:12pt; font-size:14pt;"><b><i>Название ДПП</i></b></p>
+                        <p class="center" style="margin-top:36pt;"><b><i>Автор / Авторский коллектив:</i></b></p>
+                        <p class="center"><i>ФИО автора</i></p>
+                        <div style="margin-top:96pt;">
+                        <table style="width:100%;">
+                            <tbody>
+                                <tr>
+                                    <td class=""><i>Должность согласующего</i></td>
+                                    <td class="right">______________</td>
+                                    <td class=""><i>ФИО согласующего</i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="center" style="margin-top:96pt;"><i>2018 г.</i><br clear="all" class="pageBreak"></p>
+                        </div>
+                    </div>
 
                     <table border="1" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
                         <tr>
@@ -257,6 +292,7 @@
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
+    <script src="style.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let creator = new Vue({
@@ -326,6 +362,7 @@
                     },
                 },
                 mounted() {
+                    this.setStyle();
                     this.items = JSON.parse(localStorage.getItem('items')) || [];
                     let headerData = localStorage.getItem('headerData') || '';
                     if (headerData.length) {
@@ -346,6 +383,12 @@
                     };
                 },
                 methods: {
+                    setStyle() {
+                        let a = [];
+                        let style = document.createElement("style");
+                        style.textContent = STYLE;
+                        document.getElementsByTagName("head")[0].appendChild(style);
+                    },
                     ///////
                     moduleThemes(id) {
                         return this.themes.filter(t => t.parent_id === id);
@@ -603,7 +646,7 @@
                     },
                     // ******* Export to .doc *******
                     exportToDoc() {
-                        let preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+                        let preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><style>"+STYLE+"</style><title>Export HTML To Doc</title></head><body>";
                         let postHtml = "</body></html>";
                         let html = preHtml + document.querySelector('.result').innerHTML + postHtml;
                         let blob = new Blob(['\ufeff', html], {
