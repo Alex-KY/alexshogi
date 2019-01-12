@@ -19,7 +19,7 @@
         <div class="creator-tabs-container">
             <div class="creator-tab tab-construct" :class="{ 'tab-hidden': currentTab === 'result' }">
                 <form action="">
-                    <div v-if="1 === 2">
+                    <div>
                     <label for="title">Название ДПП</label><input type="text" name="title" v-model="title">
                     <label for="authors">Автор/Авторский коллектив</label><input type="text" name="authors" v-model="authors">
                     <div class="row">
@@ -50,13 +50,11 @@
                     </select>
                     <div class="row">
                         <div class="col">
-                            <label for="">Режим аудиторных занятий – <input class="hours" type="number" name=""> часов
-                                в день</label>
+                            <label for="">Режим аудиторных занятий – <input class="hours" type="number" name=""> часа(ов) в день</label>
                         </div>
                         <div class="gap"></div>
                         <div class="col">
-                            <label for="">Срок освоения программы – <input class="hours" type="number" name="">
-                                часа(ов)</label>
+                            <label for="">Срок освоения программы – <input class="hours" type="number" name=""> часа(ов)</label>
                         </div>
                     </div>
                     </div>
@@ -65,16 +63,16 @@
                         <h3>Структура программы</h3>
                         <br>
                         <ul v-if="modules && modules.length">
-                            <li v-for="module in modules" :key="module.index" @click.stop="moduleOpen(module)" :data-module="module.id">
+                            <li class="structure-list-item" v-for="module in modules" :key="module.index" @click.stop="moduleOpen(module)" :data-module="module.id">
                                 {{ module.title }}
                                 <ul v-if="moduleThemes(module.id)">
-                                    <li v-for="theme in moduleThemes(module.id)" :key="theme.index" @click.stop="themeOpen(theme, module.id)" :data-theme="theme.id" :data-parent-id="module.id">
+                                    <li class="structure-list-item" v-for="theme in moduleThemes(module.id)" :key="theme.index" @click.stop="themeOpen(theme, module.id)" :data-theme="theme.id" :data-parent-id="module.id">
                                         {{ theme.title }}
                                         <ul v-if="themeActivities(theme.id)">
-                                            <li v-for="activity in themeActivities(theme.id)" :key="activity.index" @click.stop="activityOpen(activity, theme.id)" :data-activity="activity.id" :data-parent-id="theme.id">
+                                            <li class="structure-list-item" v-for="activity in themeActivities(theme.id)" :key="activity.index" @click.stop="activityOpen(activity, theme.id)" :data-activity="activity.id" :data-parent-id="theme.id">
                                                 {{ activity.title }}
                                                 <ul v-if="activityCompetencies(activity.id)">
-                                                    <li v-for="competence in activityCompetencies(activity.id)" :key="competence.index" @click.stop="competenceOpen(competence, activity.id)" :data-competence="competence.id" :data-parent-id="activity.id">
+                                                    <li class="structure-list-item" v-for="competence in activityCompetencies(activity.id)" :key="competence.index" @click.stop="competenceOpen(competence, activity.id)" :data-competence="competence.id" :data-parent-id="activity.id">
                                                         {{ competence.title }}
                                                     </li>
                                                 </ul>
@@ -96,6 +94,7 @@
                             </div>
                             <div class="right"></div>
                         </header>
+                        <div class="breadcrumbs" v-if="breadCrumbs(curModule.type)">{{ breadCrumbs(curModule.type) }}</div>
                         <main>
                             <label>Наименование модуля</label><input type="text" v-model="curModule.title">
                         </main>
@@ -116,6 +115,7 @@
                             </div>
                             <div class="right"></div>
                         </header>
+                        <div class="breadcrumbs" v-if="breadCrumbs(curTheme.type, curTheme.parent_id)">{{ breadCrumbs(curTheme.type, curTheme.parent_id) }}</div>
                         <main>
                             <label>Наименование темы</label><input type="text" v-model="curTheme.title">
                             <div class="row">
@@ -173,14 +173,14 @@
                             </div>
                             <div class="right"></div>
                         </header>
+                        <div class="breadcrumbs" v-if="breadCrumbs(curActivity.type, curActivity.parent_id)">{{ breadCrumbs(curActivity.type, curActivity.parent_id) }}</div>
                         <main>
                             <label>Вид деятельности/ОТФ/ТФ</label><input type="text" v-model="curActivity.title">
                         </main>
                         <footer>
                             <span class="button" @click="activitySave()">Сохранить</span>
                             <span class="button" @click="competenceAdd(curActivity.id)">Добавить профессиональную компетенцию</span>
-                            <span class="button" @click="activityRemove()">Удалить
-                                вид деятельности</span>
+                            <span class="button" @click="activityRemove()">Удалить вид деятельности</span>
                         </footer>
                     </section>
 
@@ -194,6 +194,7 @@
                             </div>
                             <div class="right"></div>
                         </header>
+                        <div class="breadcrumbs" v-if="breadCrumbs(curCompetence.type, curCompetence.parent_id)">{{ breadCrumbs(curCompetence.type, curCompetence.parent_id) }}</div>
                         <main>
                             <label>Профессиональная компетенция</label><input type="text" v-model="curCompetence.title">
                             <label>Практический опыт</label><input type="text" v-model="curCompetence.experience">
@@ -213,6 +214,50 @@
             </div>
             <div class="creator-tab tab-result" :class="{ 'tab-hidden': currentTab === 'construct' }">
                 <section class="result">
+
+                    <div id="page0" class="font12pt">
+                        <p class="center" style="margin-bottom:24pt;"><b>МИНИСТЕРСТВО ОБРАЗОВАНИЯ МОСКОВСКОЙ ОБЛАСТИ</b></p>
+                        <p class="center"><b>Государственное бюджетное образовательное учреждение</b></p>
+                        <p class="center"><b>высшего образования Московской области</b></p>
+                        <p class="center"><b>«Академия социального управления»</b></p>
+                        <p class="center" style="margin-top:36pt;"><b>Кафедра информационно-коммуникационных технологий</b></p>
+                        <div class="center" style="margin-top:12pt;">
+                            <table class="left" style="margin-top:12pt;">
+                                <thead>
+                                    <th style="padding-right:36pt;">«СОГЛАСОВАНО»</th>
+                                    <th>«УТВЕРЖДАЮ»</th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding-right:36pt;">на заседании Учёного совета<br>от «_____»___________ 20__г.<br>Протокол
+                                            № _______</td>
+                                        <td>Ректор ____________А.И. Салов<br><br>«____»_______________20__г.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="center" style="margin-top:96pt; font-size:14pt;"><b>Дополнительная профессиональная программа</b></p>
+                        <p class="center" style="margin-top:12pt; font-size:14pt;"><b>(повышение квалификации)</b></p>
+                        <p class="center" style="margin-top:12pt; font-size:14pt;" v-if="!this.title"><b><i>Название ДПП</i></b></p>
+                        <p class="center" style="margin-top:12pt; font-size:14pt;" v-if="this.title"><b><i>{{ this.title }}</i></b></p>
+                        <p class="center" style="margin-top:36pt;"><b><i>Автор / Авторский коллектив:</i></b></p>
+                        <p class="center" v-if="!this.authors"><i>ФИО автора</i></p>
+                        <p class="center" v-if="this.authors"><i>{{ this.authors }}</i></p>
+                        <div style="margin-top:96pt;">
+                            <table style="width:100%;">
+                                <tbody>
+                                    <tr>
+                                        <td class="" v-if="!this.coordPosition"><i>Должность согласующего</i></td>
+                                        <td class="" v-if="this.coordPosition"><i>{{ this.coordPosition }}</i></td>
+                                        <td class="right">______________</td>
+                                        <td class="" v-if="!this.coordName"><i>ФИО согласующего</i></td>
+                                        <td class="" v-if="this.coordName"><i>{{ this.coordName }}</i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p class="center" style="margin-top:96pt;"><i>2018 г.</i><br clear="all" class="pageBreak"></p>
+                        </div>
+                    </div>
 
                     <table border="1" cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse;">
                         <tr>
@@ -255,9 +300,9 @@
         </div>
     </main>
 
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js"></script>
+    <script src="style.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let creator = new Vue({
@@ -338,15 +383,18 @@
                         this.relevance = parsedData.relevance;
                         this.target = parsedData.target;
                     }
-                    // console.log(this.modules);
-                    // console.log(this.themes);
-                    // console.log(this.activities);
-                    // console.log(this.competencies);
+                    this.setStyle();
                     window.onbeforeunload = () => {
-                    // this.storageSave();
+                        this.storageSave();
                     };
                 },
                 methods: {
+                    setStyle() {
+                        let a = [];
+                        let style = document.createElement("style");
+                        style.textContent = STYLE;
+                        document.getElementsByTagName("head")[0].appendChild(style);
+                    },
                     ///////
                     moduleThemes(id) {
                         return this.themes.filter(t => t.parent_id === id);
@@ -356,6 +404,37 @@
                     },
                     activityCompetencies(id) {
                         return this.competencies.filter(c => c.parent_id === id);
+                    },
+                    breadCrumbs(type, parent_id) {
+                        let module = '';
+                        let theme = '';
+                        let activity = '';
+                        let competence = '';
+                        if (type === 'module') {
+                            return this.curModule.title;
+                        }
+                        if (type === 'theme') {
+                            return this.modules.find(m => m.id === parent_id).title + ' → ' + this.curTheme.title;
+                        }
+                        if (type === 'activity') {
+                            let title = this.curActivity.title;
+                            let theme = this.themes.find(t => t.id === parent_id);
+                            let themeTitle = theme.title;
+                            let module = this.modules.find(m => m.id === theme.parent_id);
+                            moduleTitle = module.title;
+                            return moduleTitle + ' → ' + themeTitle + ' → ' + title;
+                        }
+                        if (type === 'competence') {
+                            let title = this.curCompetence.title;
+                            let activity = this.activities.find(a => a.id === parent_id);
+                            let activityTitle = activity.title;
+                            let theme = this.themes.find(t => t.id === activity.parent_id);
+                            let themeTitle = theme.title;
+                            let module = this.modules.find(m => m.id === theme.parent_id);
+                            let moduleTitle = module.title;
+                            return moduleTitle + ' → ' + themeTitle + ' → ' + activityTitle + ' → ' + title;
+                        }
+                        return false;
                     },
                     ///////
                     storageSave() {
@@ -378,6 +457,7 @@
                     },
                     // ******* Modules *******
                     moduleAdd() {
+                        this.closeAll();
                         this.curModule.title = '';
                         this.curModule.id = Date.now();
                         this.moduleAddVisible = true;
@@ -419,8 +499,8 @@
                         let ask = confirm('Вы уверены?');
                         if (ask) {
                             let index = this.items.map(i => {
-                                return i.index
-                            }).indexOf(this.curModule.index);
+                                return i.id
+                            }).indexOf(this.curModule.id);
                             if (index > -1) {
                                 this.items.splice(index, 1);
                                 this.storageSave();
@@ -430,6 +510,7 @@
                     },
                     // ******* Themes *******
                     themeAdd(moduleId) {
+                        this.closeAll();
                         this.curTheme.title = '';
                         this.curTheme.labor = 0;
                         this.curTheme.labor_pps = 0;
@@ -482,8 +563,8 @@
                         let ask = confirm('Вы уверены?');
                         if (ask) {
                             let index = this.items.map(i => {
-                                return i.index
-                            }).indexOf(this.curTheme.index);
+                                return i.id
+                            }).indexOf(this.curTheme.id);
                             if (index > -1) {
                                 this.items.splice(index, 1);
                                 this.storageSave();
@@ -493,6 +574,7 @@
                     },
                     // ******* Activities *******
                     activityAdd(themeId) {
+                        this.closeAll();
                         this.curActivity.title = '';
                         this.curActivity.id = Date.now();
                         this.curActivity.parent_id = themeId;
@@ -537,8 +619,8 @@
                         let ask = confirm('Вы уверены?');
                         if (ask) {
                             let index = this.items.map(i => {
-                                return i.index
-                            }).indexOf(this.curActivity.index);
+                                return i.id
+                            }).indexOf(this.curActivity.id);
                             if (index > -1) {
                                 this.items.splice(index, 1);
                                 this.storageSave();
@@ -548,6 +630,7 @@
                     },
                     // ******* Competencies *******
                     competenceAdd(activityId) {
+                        this.closeAll();
                         this.curCompetence.title = '';
                         this.curCompetence.experience = '';
                         this.curCompetence.skill = '';
@@ -595,8 +678,8 @@
                         let ask = confirm('Вы уверены?');
                         if (ask) {
                             let index = this.items.map(i => {
-                                return i.index
-                            }).indexOf(this.curCompetence.index);
+                                return i.id
+                            }).indexOf(this.curCompetence.id);
                             if (index > -1) {
                                 this.items.splice(index, 1);
                                 this.storageSave();
@@ -606,7 +689,7 @@
                     },
                     // ******* Export to .doc *******
                     exportToDoc() {
-                        let preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+                        let preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><style>" + STYLE + "</style><title>Export HTML To Doc</title></head><body>";
                         let postHtml = "</body></html>";
                         let html = preHtml + document.querySelector('.result').innerHTML + postHtml;
                         let blob = new Blob(['\ufeff', html], {
@@ -850,6 +933,10 @@
             justify-content: center;
         }
 
+        .content-add header .breadcrumbs {
+            flex: 1;
+        }
+
         .content-add header .close {
             color: #da251d;
             font-size: 28px;
@@ -873,15 +960,8 @@
             padding-top: 10px;
         }
 
-        .module,
-        .theme {
+        .modules ul li {
             cursor: pointer;
-            color: rgb(49, 49, 230);
-        }
-
-        .module:hover,
-        .theme:hover {
-            color: rgb(22, 22, 223);
         }
 
         .result table th,
